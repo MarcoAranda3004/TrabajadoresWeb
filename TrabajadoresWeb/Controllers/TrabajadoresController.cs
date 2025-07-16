@@ -20,7 +20,7 @@ namespace TrabajadoresWeb.Controllers
         }
 
         // GET: Trabajadores
-        public async Task<IActionResult> Index(string sexo)
+        public async Task<IActionResult> Index(string sexo, int? departamentoId)
         {
             var trabajadoresQuery = _context.Trabajadores
                 .Include(t => t.Departamento)
@@ -33,10 +33,16 @@ namespace TrabajadoresWeb.Controllers
                 trabajadoresQuery = trabajadoresQuery.Where(t => t.Sexo == sexo);
             }
 
-            ViewData["Sexo"] = new SelectList(new List<string> { "Masculino", "Femenino" });
+            if (departamentoId.HasValue)
+            {
+                trabajadoresQuery = trabajadoresQuery.Where(t => t.IdDepartamento == departamentoId.Value);
+            }
+
+            ViewBag.Departamentos = _context.Departamentos.ToList();
 
             return View(await trabajadoresQuery.ToListAsync());
         }
+
 
         // GET: Trabajadores/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -62,8 +68,8 @@ namespace TrabajadoresWeb.Controllers
             ViewBag.TipoDocumentos = new List<SelectListItem>
             {
                 new SelectListItem { Value = "DNI", Text = "DNI" },
-                new SelectListItem { Value = "Carnet Extranjeria", Text = "Carnet Extranjeria" },
-                new SelectListItem { Value = "Pasaporte", Text = "Pasaporte" }
+                new SelectListItem { Value = "CE", Text = "Carnet Extranjeria" },
+                new SelectListItem { Value = "PAS", Text = "Pasaporte" }
             };
 
             ViewBag.Sexos = new List<SelectListItem>
@@ -107,8 +113,8 @@ namespace TrabajadoresWeb.Controllers
             ViewBag.TipoDocumentos = new List<SelectListItem>
             {
                 new SelectListItem { Value = "DNI", Text = "DNI" },
-                new SelectListItem { Value = "Carnet Extranjeria", Text = "Carnet Extranjeria" },
-                new SelectListItem { Value = "Pasaporte", Text = "Pasaporte" }
+                new SelectListItem { Value = "CE", Text = "Carnet Extranjeria" },
+                new SelectListItem { Value = "PAS", Text = "Pasaporte" }
             };
 
              // Combo de sexo
@@ -170,7 +176,11 @@ namespace TrabajadoresWeb.Controllers
             }
 
             var trabajador = await _context.Trabajadores
+                .Include(t => t.Departamento)
+                .Include(t => t.Provincia)
+                .Include(t => t.Distrito)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (trabajador == null)
             {
                 return NotFound();
@@ -178,6 +188,7 @@ namespace TrabajadoresWeb.Controllers
 
             return View(trabajador);
         }
+
 
         // POST: Trabajadores/Delete/5
         [HttpPost, ActionName("Delete")]

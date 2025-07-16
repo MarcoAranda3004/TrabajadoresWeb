@@ -20,3 +20,77 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.fila-masculino {
+    background-color: #cce5ff !important; 
+}
+
+.fila-femenino {
+    background-color: #ffe5b4 !important; 
+}
+
+
+.boton-editar {
+    background-color: orange;
+    color: black;
+    padding: 4px 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+    .boton-editar:hover {
+        background-color: darkorange;
+        color: white;
+    }
+
+
+.boton-eliminar {
+    background-color: red;
+    color: white;
+    padding: 4px 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+    .boton-eliminar:hover {
+        background-color: darkred;
+    }
+
+
+/* FORMULARIO DE REGISTRO */
+.card-form {
+    max-width: 550px;
+    margin: 30px auto;
+    border: 1px solid #333;
+    padding: 25px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+    .card-form h2 {
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .card-form h1 {
+        text-align: center;
+        font-size: 1.6rem;
+        margin-bottom: 0;
+        font-weight: bold;
+        color: #000;
+    }
+
+.btn-success {
+    background-color: #00c853 !important;
+    border: none;
+    font-weight: bold;
+}
+
+    .btn-success:hover {
+        background-color: #00b44e !important;
+    }

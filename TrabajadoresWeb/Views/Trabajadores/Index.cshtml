@@ -3,70 +3,66 @@
 @{
     ViewData["Title"] = "Index";
     var sexoSeleccionado = Context.Request.Query["sexo"].ToString();
+    var departamentoSeleccionado = Context.Request.Query["departamentoId"].ToString();
 }
 
-<h1>Listado de Trabajadores</h1>
+<h2 class="text-center mb-4">Listado de Trabajadores</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">Nuevo Registro</a>
+</div>
+
+<!-- Filtro -->
+<form asp-action="Index" method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-4">
+        <label for="sexo" class="form-label fw-bold">Sexo</label>
+        @Html.DropDownList("sexo", new SelectList(new[] {
+        new { Value = "", Text = "-- Todos --" },
+                new { Value = "M", Text = "Masculino" },
+                new { Value = "F", Text = "Femenino" }
+                }, "Value", "Text", sexoSeleccionado), new { @class = "form-control" })
+    </div>
+    <div class="col-md-4">
+        <label for="departamentoId" class="form-label fw-bold">Departamento</label>
+        @Html.DropDownList("departamentoId", new SelectList((IEnumerable<TrabajadoresWeb.Models.Departamento>)ViewBag.Departamentos, "Id", "NombreDepartamento", departamentoSeleccionado), "-- Todos --", new { @class = "form-control" })
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Limpiar</a>
+    </div>
+</form>
+
+<!-- Tabla -->
+<table class="table table-bordered table-striped text-center">
+    <thead class="table-white">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoDocumento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumeroDocumento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombres)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sexo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdDepartamento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdProvincia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdDistrito)
-            </th>
-            <th></th>
+            <th>Tipo Documento</th>
+            <th>Nro Documento</th>
+            <th>Nombres</th>
+            <th>Sexo</th>
+            <th>Departamento</th>
+            <th>Provincia</th>
+            <th>Distrito</th>
+            <th>Acción</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoDocumento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumeroDocumento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombres)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sexo)
-            </td>
-            <td>
-                    @item.Departamento?.NombreDepartamento
-            </td>
-            <td>
-                    @item.Provincia?.NombreProvincia
-            </td>
-            <td>
-                    @item.Distrito?.NombreDistrito
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            var claseSexo = item.Sexo == "M" ? "fila-masculino" : "fila-femenino";
+            <tr class="@claseSexo">
+                <td>@item.TipoDocumento</td>
+                <td>@item.NumeroDocumento</td>
+                <td>@item.Nombres</td>
+                <td>@item.Sexo</td>
+                <td>@item.Departamento?.NombreDepartamento</td>
+                <td>@item.Provincia?.NombreProvincia</td>
+                <td>@item.Distrito?.NombreDistrito</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="boton-editar">Editar</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="boton-eliminar">Eliminar</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
