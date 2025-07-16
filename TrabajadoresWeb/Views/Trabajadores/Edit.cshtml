@@ -1,64 +1,98 @@
 ﻿@model TrabajadoresWeb.Models.Trabajador
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar";
 }
 
-<h1>Edit</h1>
+<h1>Editar Trabajador</h1>
 
-<h4>Trabajador</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
                 <label asp-for="TipoDocumento" class="control-label"></label>
-                <input asp-for="TipoDocumento" class="form-control" />
+                @Html.DropDownListFor(model => model.TipoDocumento, (List<SelectListItem>)ViewBag.TipoDocumentos, "-- Seleccione --", new { @class = "form-control" })
                 <span asp-validation-for="TipoDocumento" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="NumeroDocumento" class="control-label"></label>
                 <input asp-for="NumeroDocumento" class="form-control" />
                 <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Nombres" class="control-label"></label>
                 <input asp-for="Nombres" class="form-control" />
                 <span asp-validation-for="Nombres" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Sexo" class="control-label"></label>
-                <input asp-for="Sexo" class="form-control" />
+                @Html.DropDownListFor(model => model.Sexo, (List<SelectListItem>)ViewBag.Sexos, "-- Seleccione --", new { @class = "form-control" })
                 <span asp-validation-for="Sexo" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="IdDepartamento" class="control-label"></label>
-                <input asp-for="IdDepartamento" class="form-control" />
+                @Html.DropDownListFor(model => model.IdDepartamento, (SelectList)ViewBag.Departamentos, "-- Seleccione --", new { @class = "form-control", id = "DepartamentoId" })
                 <span asp-validation-for="IdDepartamento" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="IdProvincia" class="control-label"></label>
-                <input asp-for="IdProvincia" class="form-control" />
+                @Html.DropDownListFor(model => model.IdProvincia, (SelectList)ViewBag.Provincias, "-- Seleccione --", new { @class = "form-control", id = "ProvinciaId" })
                 <span asp-validation-for="IdProvincia" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="IdDistrito" class="control-label"></label>
-                <input asp-for="IdDistrito" class="form-control" />
+                @Html.DropDownListFor(model => model.IdDistrito, (SelectList)ViewBag.Distritos, "-- Seleccione --", new { @class = "form-control", id = "DistritoId" })
                 <span asp-validation-for="IdDistrito" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#DepartamentoId').change(function () {
+                var departamentoId = $(this).val();
+                $('#ProvinciaId').html('<option value="">Cargando...</option>');
+                $('#DistritoId').html('<option value="">--</option>');
+
+                $.getJSON('/Trabajadores/GetProvincias?departamentoId=' + departamentoId, function (data) {
+                    var items = '<option value="">-- Seleccione --</option>';
+                    $.each(data, function (i, provincia) {
+                        items += '<option value="' + provincia.id + '">' + provincia.nombreProvincia + '</option>';
+                    });
+                    $('#ProvinciaId').html(items);
+                });
+            });
+
+            $('#ProvinciaId').change(function () {
+                var provinciaId = $(this).val();
+                $('#DistritoId').html('<option value="">Cargando...</option>');
+
+                $.getJSON('/Trabajadores/GetDistritos?provinciaId=' + provinciaId, function (data) {
+                    var items = '<option value="">-- Seleccione --</option>';
+                    $.each(data, function (i, distrito) {
+                        items += '<option value="' + distrito.id + '">' + distrito.nombreDistrito + '</option>';
+                    });
+                    $('#DistritoId').html(items);
+                });
+            });
+        });
+    </script>
 }

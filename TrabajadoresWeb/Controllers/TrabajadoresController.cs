@@ -59,6 +59,20 @@ namespace TrabajadoresWeb.Controllers
         // GET: Trabajadores/Create
         public IActionResult Create()
         {
+            ViewBag.TipoDocumentos = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "DNI", Text = "DNI" },
+                new SelectListItem { Value = "Carnet Extranjeria", Text = "Carnet Extranjeria" },
+                new SelectListItem { Value = "Pasaporte", Text = "Pasaporte" }
+            };
+
+            ViewBag.Sexos = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "M", Text = "Masculino" },
+                new SelectListItem { Value = "F", Text = "Femenino" }
+            };
+
+            ViewBag.Departamentos = new SelectList(_context.Departamentos, "Id", "NombreDepartamento");
             return View();
         }
 
@@ -81,16 +95,34 @@ namespace TrabajadoresWeb.Controllers
         // GET: Trabajadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var trabajador = await _context.Trabajadores.FindAsync(id);
-            if (trabajador == null)
+            var trabajador = await _context.Trabajadores
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trabajador == null) return NotFound();
+
+            // Combo de tipo documento
+            ViewBag.TipoDocumentos = new List<SelectListItem>
             {
-                return NotFound();
-            }
+                new SelectListItem { Value = "DNI", Text = "DNI" },
+                new SelectListItem { Value = "Carnet Extranjeria", Text = "Carnet Extranjeria" },
+                new SelectListItem { Value = "Pasaporte", Text = "Pasaporte" }
+            };
+
+             // Combo de sexo
+            ViewBag.Sexos = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "M", Text = "Masculino" },
+                new SelectListItem { Value = "F", Text = "Femenino" }
+            };
+    
+            // Combo cascada
+            ViewBag.Departamentos = new SelectList(_context.Departamentos, "Id", "NombreDepartamento", trabajador.IdDepartamento);
+            ViewBag.Provincias = new SelectList(_context.Provincias.Where(p => p.IdDepartamento == trabajador.IdDepartamento), "Id", "NombreProvincia", trabajador.IdProvincia);
+            ViewBag.Distritos = new SelectList(_context.Distritos.Where(d => d.IdProvincia == trabajador.IdProvincia), "Id", "NombreDistrito", trabajador.IdDistrito);
+
             return View(trabajador);
         }
 
@@ -161,6 +193,30 @@ namespace TrabajadoresWeb.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public JsonResult GetProvincias(int departamentoId)
+        {
+            var provincias = _context.Provincias
+                .Where(p => p.IdDepartamento == departamentoId)
+                .Select(p => new { p.Id, p.NombreProvincia })
+                .ToList();
+
+            return Json(provincias);
+        }
+
+        [HttpGet]
+        public JsonResult GetDistritos(int provinciaId)
+        {
+            var distritos = _context.Distritos
+                .Where(d => d.IdProvincia == provinciaId)
+                .Select(d => new { d.Id, d.NombreDistrito })
+                .ToList();
+
+            return Json(distritos);
+        }
+
 
         private bool TrabajadorExists(int id)
         {
