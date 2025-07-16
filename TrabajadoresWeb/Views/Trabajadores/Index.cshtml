@@ -2,9 +2,10 @@
 
 @{
     ViewData["Title"] = "Index";
+    var sexoSeleccionado = Context.Request.Query["sexo"].ToString();
 }
 
-<h1>Index</h1>
+<h1>Listado de Trabajadores</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -52,13 +53,13 @@
                 @Html.DisplayFor(modelItem => item.Sexo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdDepartamento)
+                    @item.Departamento?.NombreDepartamento
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdProvincia)
+                    @item.Provincia?.NombreProvincia
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdDistrito)
+                    @item.Distrito?.NombreDistrito
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

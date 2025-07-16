@@ -20,9 +20,22 @@ namespace TrabajadoresWeb.Controllers
         }
 
         // GET: Trabajadores
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sexo)
         {
-            return View(await _context.Trabajadores.ToListAsync());
+            var trabajadoresQuery = _context.Trabajadores
+                .Include(t => t.Departamento)
+                .Include(t => t.Provincia)
+                .Include(t => t.Distrito)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(sexo))
+            {
+                trabajadoresQuery = trabajadoresQuery.Where(t => t.Sexo == sexo);
+            }
+
+            ViewData["Sexo"] = new SelectList(new List<string> { "Masculino", "Femenino" });
+
+            return View(await trabajadoresQuery.ToListAsync());
         }
 
         // GET: Trabajadores/Details/5
